@@ -15,10 +15,10 @@ export default Vue.extend({
   },
   computed: {
     displayFromNow: function() {
-      return moment(this.date).fromNow();
+      return moment(this.date).fromNow()
     }
   }
-});
+})
 </script>
 
 <style scoped>

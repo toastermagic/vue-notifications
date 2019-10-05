@@ -1,8 +1,10 @@
 <template>
   <div id="app">
-    <input ref="noteMessage" type="text" v-model="noteMessage" />
-    <button v-on:click="newNotification()">New</button>
-    <NotificationBar />
+    <form v-on:submit.prevent="newNotification">
+      <input ref="noteMessage" type="text" v-model="noteMessage" />
+      <button>New</button>
+    </form>
+    <NotificationBar :bus="bus"/>
   </div>
 </template>
 
@@ -10,16 +12,16 @@
 import Vue from "vue";
 import NotificationBar from "./components/NotificationBar.vue";
 import { AdzuNotification } from "@/models/AdzuNotification";
-import { ADD_NOTIFICATION } from "@/models/Mutations";
 
 export default Vue.extend({
   name: "app",
   components: {
     NotificationBar
   },
-  data: function() {
+  data() {
     return {
-      noteMessage: ""
+      noteMessage: "",
+      bus: new Vue()
     };
   },
   mounted() {
@@ -27,14 +29,14 @@ export default Vue.extend({
   },
   methods: {
     newNotification() {
-      const newN = new AdzuNotification();
-      newN.message = this.noteMessage;
-      this.$store.commit(ADD_NOTIFICATION, newN);
+      this.bus.$emit("newNotification", this.noteMessage);
       this.noteMessage = "";
       this.focusInput();
     },
     focusInput() {
-      (<HTMLInputElement>this.$refs.noteMessage).focus();
+      // eslint-disable-next-line
+      const input = this.$refs.noteMessage as HTMLInputElement;
+      input.focus();
     }
   }
 });

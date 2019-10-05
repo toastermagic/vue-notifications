@@ -1,7 +1,7 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import { AdzuNotification } from '@/models/AdzuNotification';
-import { ADD_NOTIFICATION, REMOVE_NOTIFICATION, MARK_AS_READ } from '@/models/Mutations';
+import Vue from "vue";
+import Vuex from "vuex";
+import { AdzuNotification } from "@/models/AdzuNotification";
+import { ADD_NOTIFICATION, REMOVE_NOTIFICATION, MARK_AS_READ } from "@/models/Mutations";
 
 Vue.use(Vuex);
 
@@ -43,4 +43,4 @@ export default new Vuex.Store({
       commit(MARK_AS_READ, notification);
     },
   }
-})
+});
