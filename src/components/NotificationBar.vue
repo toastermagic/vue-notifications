@@ -1,6 +1,6 @@
 <template>
   <div class="notificationBar">
-    <ul class="notificationList">
+    <ul>
       <transition-group name="list-transitions">
         <li v-for="note in notificationList" :key="note.id" class="list-transitions-item">
           <Notification :notification="note" :bus="bus" />
