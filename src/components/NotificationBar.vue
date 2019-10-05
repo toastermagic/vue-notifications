@@ -1,12 +1,12 @@
 <template>
   <div>
-    <input type="text" v-model="noteMessage" />
-    <button v-on:click="newNotification()">New</button>
     <div class="notificationBar">
       <ul class="notificationList">
-        <li v-for="note in notificationList" v-bind:key="note.id">
-          <Notification v-bind:notification="note" />
-        </li>
+        <transition-group name="list-transitions">
+          <li v-for="note in notificationList" v-bind:key="note.id" class="note-item">
+            <Notification v-bind:notification="note" />
+          </li>
+        </transition-group>
       </ul>
     </div>
   </div>
@@ -14,18 +14,11 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { AdzuNotification } from "../models/AdzuNotification";
-import { ADD_NOTIFICATION } from "@/models/Mutations";
 import Notification from "@/components/Notification.vue";
 
 export default Vue.extend({
   components: {
     Notification
-  },
-  data: function() {
-    return {
-      noteMessage: ""
-    };
   },
   name: "NotificationBar",
   computed: {
@@ -33,42 +26,44 @@ export default Vue.extend({
       return this.$store.state.notificationList;
     }
   },
-  methods: {
-    newNotification() {
-      const newN = new AdzuNotification();
-      newN.message = this.noteMessage;
-      this.$store.commit(ADD_NOTIFICATION, newN);
-    }
-  }
 });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.notificationList {
+.note-item {
+  transition: all 0.5s;
   display: flex;
-  flex-direction: column;
+}
+.list-transitions-enter {
+  opacity: 0;
+  transform: translateY(100vh);
+}
+.list-transitions-leave-to {
+  transform: translateX(400px);
+}
+.list-transitions-active {
+  position: absolute;
 }
 .notificationBar {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   right: 0px;
   top: 0px;
-  background: blue;
-  height: 100%;
-  margin-right: 10px;
-  align-content: flex-start;
-  align-items: flex-start;
-}
-h3 {
-  margin: 40px 0 0;
+  background: rgba(0, 0, 255, 0.2);
+  height: 100vh;
+  overflow: hidden;
+  width: 220px;
 }
 ul {
   list-style-type: none;
   padding: 0;
+  margin: 0;
 }
 li {
   display: inline-block;
-  margin: 0 10px;
+  margin: 10px;
 }
 a {
   color: #42b983;

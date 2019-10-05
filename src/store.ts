@@ -22,7 +22,7 @@ export default new Vuex.Store({
       state.notificationList.push(newNotification);
     },
     [REMOVE_NOTIFICATION](state: INotificationStoreState, notification: AdzuNotification): void {
-      state.notificationList.splice(state.notificationList.findIndex((n) => n.id === notification.id));
+      state.notificationList.splice(state.notificationList.findIndex((n) => n.id === notification.id), 1);
     },
     [MARK_AS_READ](state: INotificationStoreState, notification: AdzuNotification): void {
       const note: AdzuNotification | undefined = state.notificationList.find((n) => n.id === notification.id);
