@@ -14,7 +14,6 @@
 import Vue from "vue";
 import Notification from "@/components/Notification.vue";
 import { AdzuNotification } from "@/models/AdzuNotification";
-import { ADD_NOTIFICATION, REMOVE_NOTIFICATION } from "@/models/Mutations";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component({
