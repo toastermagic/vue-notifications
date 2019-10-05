@@ -54,14 +54,6 @@ export default class NotificationBar extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* .sidebar {
-  position: absolute;
-  top: 50%;
-  right: 0%;
-  transform: translate(0%, 50%);
-  -ms-transform: translate(-0%, 50%);
-  height: 100%;
-} */
 .list-transitions-item {
   transition: all 0.5s;
   display: flex;
