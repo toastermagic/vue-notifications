@@ -4,9 +4,12 @@ export class AdzuNotification {
     message: string = "";
     read: boolean = false;
 
-    constructor() {
-        const time: Date = new Date();
-        this.arrivalTime = time;
-        this.id = time.valueOf().toString();
+    constructor(message?: string) {
+      if (message) {
+        this.message = message;
+      }
+      const time: Date = new Date();
+      this.arrivalTime = time;
+      this.id = time.valueOf().toString();
     }
 }

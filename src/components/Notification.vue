@@ -12,40 +12,45 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { Component, Prop } from "vue-property-decorator";
 import NotificationDate from "@/components/NotificationDate.vue";
 import { REMOVE_NOTIFICATION } from "@/models/Mutations";
 import moment from "moment";
 
-let interval = 0;
-
-export default Vue.extend({
-  name: "Notification",
+@Component({
   components: {
     NotificationDate
-  },
-  props: ["notification", "bus"],
-  data() {
-    return {
-      refreshKey: 0
-    };
-  },
+  }
+})
+export default class Notification extends Vue {
+  @Prop()
+  public readonly notification: any;
+
+  @Prop()
+  public readonly bus?: Vue;
+
+  refreshKey = 0;
+
   mounted() {
-    this.bus.$on("refresh", this.forceReRenderTime);
-  },
-  destroyed() {
-    // do this, otherwise events will still be caught
-    this.bus.$off("refresh", this.forceReRenderTime);
-  },
-  methods: {
-    removeNote() {
-      this.bus.$emit('removeNotification', this.notification);
-    },
-    forceReRenderTime() {
-      // changing the key forces the child component to be re-rendered (with updated time since)
-      this.refreshKey += 1;
+    if (this.bus) {
+      this.bus.$on("refresh", this.forceReRenderTime);
     }
   }
-});
+  destroyed() {
+    // do this, otherwise events will still be caught
+    if (this.bus) {
+      this.bus.$off("refresh", this.forceReRenderTime);
+    }
+  }
+  removeNote() {
+    this.$store.commit(REMOVE_NOTIFICATION, this.notification);
+  }
+  forceReRenderTime() {
+    // changing the key forces the child component to be re-rendered (with updated time since)
+    this.refreshKey += 1;
+  }
+}
+
 </script>
 
 <style scoped>
@@ -70,5 +75,9 @@ export default Vue.extend({
 .noteContainer {
   position: relative;
   padding: 2px 16px;
+}
+
+.noteDate {
+  font-size: 0.8rem;
 }
 </style>
