@@ -9,7 +9,9 @@
       </div>
     </form>
     <button v-on:click="toggleSidebar()">Toggle</button>
-    <NotificationBar :bus="bus" v-if="showSidebar" />
+    <transition name="sidebar">
+      <NotificationBar class="sidebar-item" :bus="bus" v-if="showSidebar" />
+    </transition>
     <NotificationPopupManager class="notificationPopupManager" :bus="bus"/>
   </div>
 </template>
@@ -59,7 +61,7 @@ export default class app extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -70,9 +72,21 @@ export default class app extends Vue {
 }
 
 .notificationPopupManager {
-  background: red;
   position: absolute;
   right: 0px;
   bottom: 0px;
 }
+
+.sidebar-item {
+  transition: all 0.5s;
+}
+.sidebar-leave-active {
+  position: absolute;
+}
+
+.sidebar-enter,
+.sidebar-leave-to {
+  transform: translateX(200px);
+}
+
 </style>

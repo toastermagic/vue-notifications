@@ -1,8 +1,13 @@
 <template>
   <div class="popupManager">
-    <div>Iam Here</div>
     <transition name="popup">
-      <NotificationPopup class="popup-item" :notification="notification" :bus="bus" />
+      <Notification
+        v-if="showPopup"
+        class="popup-item"
+        :popup="true"
+        :notification="notification"
+        :bus="bus"
+      />
     </transition>
   </div>
 </template>
@@ -11,54 +16,64 @@
 import Vue from "vue";
 import { AdzuNotification } from "@/models/AdzuNotification";
 import { Component, Prop } from "vue-property-decorator";
-import NotificationPopup from "@/components/NotificationPopup.vue";
+import Notification from "@/components/Notification.vue";
 
 @Component({
   components: {
-    NotificationPopup
+    Notification
   }
 })
 export default class NotificationPopupManager extends Vue {
   @Prop()
   public readonly bus?: Vue;
 
-  @Prop()
   notification?: AdzuNotification;
 
   showPopup: boolean = false;
+  timeout = 0;
 
   mounted() {
     if (this.bus) {
-      this.bus.$on("popup", (notification: AdzuNotification) => {
-        // this.notification = notification;
-        this.showPopup = true;
-        setTimeout(() => {
-          this.showPopup = false;
-        }, 5000);
-      });
+      this.bus.$on("popup", this.displayPopup);
+      this.bus.$on("closePopup", this.closePopup);
     }
+  }
+
+  detroyed() {
+    if (this.bus) {
+      this.bus.$off("popup", this.displayPopup);
+      this.bus.$off("closePopup", this.closePopup);
+    }
+  }
+
+  closePopup() {
+    console.log("closing popup");
+    this.notification = undefined;
+    this.showPopup = false;
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+  }
+
+  displayPopup(notification: AdzuNotification) {
+    console.log("showing popup", notification.message);
+    this.notification = notification;
+    this.showPopup = true;
+    this.timeout = setTimeout(() => {
+      this.closePopup();
+    }, 5000);
   }
 }
 </script>
 
 <style scoped>
-.popupManager {
-    height: 400px;
-}
-.popup-item {
+.popup-enter-active,
+.popup-leave-active {
   transition: all 0.5s;
 }
-.popup-leave-active {
-  position: absolute;
-}
 
-.popup-enter-active,
-.popup.leave-active {
-  transition: all 0.5ms;
-}
 .popup-enter,
-.popup-leave-to {
-  transform: translateY(400px);
-  background-color: blue;
+.popup-leave-active {
+  transform: translateY(100px);
 }
 </style>

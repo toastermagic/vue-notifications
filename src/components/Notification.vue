@@ -1,11 +1,11 @@
 <template>
-  <div class="noteCard">
+  <div class="noteCard" @click="closePopup()">
     <div class="noteContainer">
       <div class="noteDate">
         <NotificationDate :date="notification.arrivalTime" :key="refreshKey" />
       </div>
       <div class="noteMessage">{{ notification.message }}</div>
-      <button v-on:click="removeNote()" class="removeButton">X</button>
+      <button v-if="!popup" @click="removeNote()" class="removeButton">X</button>
     </div>
   </div>
 </template>
@@ -29,6 +29,9 @@ export default class Notification extends Vue {
   @Prop()
   public readonly bus?: Vue;
 
+  @Prop()
+  public readonly popup?: boolean;
+
   refreshKey = 0;
 
   mounted() {
@@ -44,6 +47,11 @@ export default class Notification extends Vue {
   }
   removeNote() {
     this.$store.commit(REMOVE_NOTIFICATION, this.notification);
+  }
+  closePopup() {
+    if (this.bus) {
+      this.bus.$emit("closePopup");
+    }
   }
   forceReRenderTime() {
     // changing the key forces the child component to be re-rendered (with updated time since)
