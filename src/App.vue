@@ -8,11 +8,16 @@
         <button>New</button>
       </div>
     </form>
-    <button v-on:click="toggleSidebar()">Toggle</button>
+    <div>
+      <button v-on:click="createMany()">Create set</button>
+    </div>
+    <div>
+      <button v-on:click="toggleSidebar()">Toggle</button>
+    </div>
     <transition name="sidebar">
       <NotificationBar class="sidebar-item" :bus="bus" v-if="showSidebar" />
     </transition>
-    <NotificationPopupManager class="notificationPopupManager" :bus="bus"/>
+    <NotificationPopupManager class="notificationPopupManager" :bus="bus" />
   </div>
 </template>
 
@@ -58,6 +63,23 @@ export default class app extends Vue {
   toggleSidebar() {
     this.$store.commit(TOGGLE_SIDEBAR);
   }
+  createMany() {
+    for(var x = 22; x >= 0; x-=2) {
+      const newN = new AdzuNotification(`message-a-${x}`, this.hoursAgo(x));
+      this.$store.commit(ADD_NOTIFICATION, newN);
+    }
+
+    for(var x = 12; x >= 1; x--) {
+      const newN = new AdzuNotification(`message-b-${x}`, this.daysAgo(x));
+      this.$store.commit(ADD_NOTIFICATION, newN);
+    }
+  }
+  hoursAgo(numHours: number) {
+    return new Date(new Date().valueOf() - (numHours * 60 * 60 * 1000));
+  }
+  daysAgo(numDays: number) {
+    return new Date(new Date().valueOf() - (numDays * 24 * 60 * 60 * 1000));
+  }
 }
 </script>
 
@@ -88,5 +110,4 @@ export default class app extends Vue {
 .sidebar-leave-to {
   transform: translateX(200px);
 }
-
 </style>
