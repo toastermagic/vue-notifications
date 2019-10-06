@@ -10,26 +10,31 @@
     </form>
     <button v-on:click="toggleSidebar()">Toggle</button>
     <NotificationBar :bus="bus" v-if="showSidebar" />
+    <NotificationPopupManager class="notificationPopupManager" :bus="bus"/>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import NotificationBar from "./components/NotificationBar.vue";
+import NotificationPopupManager from "./components/NotificationPopupManager.vue";
 import { AdzuNotification } from "@/models/AdzuNotification";
 import { TOGGLE_SIDEBAR, ADD_NOTIFICATION } from "./models/Mutations";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component({
-  components: { NotificationBar }
+  components: { NotificationBar, NotificationPopupManager }
 })
 export default class app extends Vue {
   noteMessage = "";
   bus = new Vue();
+  showPopup = false;
+  newNotifcation: AdzuNotification | undefined = undefined;
 
   get showSidebar() {
     return this.$store.state.sidebarOpen;
   }
+
   mounted() {
     this.focusInput();
   }
@@ -39,6 +44,10 @@ export default class app extends Vue {
 
     this.noteMessage = "";
     this.focusInput();
+
+    if (!this.showSidebar) {
+      this.bus.$emit("popup", newN);
+    }
   }
   focusInput() {
     const input = this.$refs.noteMessage as HTMLInputElement;
@@ -58,5 +67,12 @@ export default class app extends Vue {
   text-align: left;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+.notificationPopupManager {
+  background: red;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
 }
 </style>

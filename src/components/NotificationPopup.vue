@@ -1,23 +1,28 @@
 <template>
-    <Notification :notification="notification" :bus="bus" />
+  <div v-if="notification">
+    <Notification class="popup-item" :notification="notification" :bus="bus" />
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { AdzuNotification } from "@/models/AdzuNotification";
 import { Component, Prop } from "vue-property-decorator";
-import NotificationDate from "@/components/NotificationDate.vue";
+import Notification from "@/components/Notification.vue";
 
 @Component({
-    components: {
-        NotificationDate
-    }
+  components: {
+    Notification
+  }
 })
 export default class NotificationPopup extends Vue {
-    @Prop()
-    public notification?: AdzuNotification;
+  @Prop()
+  public notification?: AdzuNotification;
 
-    @Prop()
-    public readonly bus?: Vue;
+  @Prop()
+  public readonly bus?: Vue;
 }
 </script>
+
+<style scoped>
+</style>
