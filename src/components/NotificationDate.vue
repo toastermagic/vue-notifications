@@ -1,5 +1,5 @@
 <template>
-  <div>{{ displayFromNow }}</div>
+  <div :title="this.date">{{ displayFromNow }}</div>
 </template>
 
 <script lang="ts">
