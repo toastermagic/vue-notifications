@@ -22,6 +22,7 @@ export default new Vuex.Store({
   mutations: {
     [ADD_NOTIFICATION](state: INotificationStoreState, newNotification: AdzuNotification): void {
       state.notificationList.unshift(newNotification);
+      state.notificationList.sort((a: AdzuNotification, b: AdzuNotification) => a.arrivalTime.valueOf() - b.arrivalTime.valueOf() ? 1 : -1);
     },
     [REMOVE_NOTIFICATION](state: INotificationStoreState, notification: AdzuNotification): void {
       state.notificationList.splice(state.notificationList.findIndex((n) => n.id === notification.id), 1);
@@ -37,18 +38,18 @@ export default new Vuex.Store({
       state.sidebarOpen = !state.sidebarOpen;
     }
   },
-  // actions: {
-  //   [ADD_NOTIFICATION]({ commit }: any, newNotification: AdzuNotification): void {
-  //     commit(ADD_NOTIFICATION, newNotification);
-  //   },
-  //   [REMOVE_NOTIFICATION]({ commit }: any, notification: AdzuNotification): void {
-  //     commit(REMOVE_NOTIFICATION, notification);
-  //   },
-  //   [MARK_AS_READ]({ commit }: any, notification: AdzuNotification): void {
-  //     commit(MARK_AS_READ, notification);
-  //   },
-  //   [TOGGLE_SIDEBAR]({ commit }: any): void {
-  //     commit(TOGGLE_SIDEBAR);
-  //   },
-  // }
+  actions: {
+    [ADD_NOTIFICATION]({ commit }: any, newNotification: AdzuNotification): void {
+      commit(ADD_NOTIFICATION, newNotification);
+    },
+    [REMOVE_NOTIFICATION]({ commit }: any, notification: AdzuNotification): void {
+      commit(REMOVE_NOTIFICATION, notification);
+    },
+    [MARK_AS_READ]({ commit }: any, notification: AdzuNotification): void {
+      commit(MARK_AS_READ, notification);
+    },
+    [TOGGLE_SIDEBAR]({ commit }: any): void {
+      commit(TOGGLE_SIDEBAR);
+    },
+  }
 });

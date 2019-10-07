@@ -46,7 +46,7 @@ export default class Notification extends Vue {
     }
   }
   removeNote() {
-    this.$store.commit(REMOVE_NOTIFICATION, this.notification);
+    this.$store.dispatch(REMOVE_NOTIFICATION, this.notification);
   }
   closePopup() {
     if (this.bus) {

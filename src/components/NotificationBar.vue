@@ -1,7 +1,12 @@
 <template>
   <div class="notificationBar">
+    <div v-if="todaysNotifications.length > 0">
     <hr style="width:100%" />
-    <div class="dateHeading">Today</div>
+    <div style="display: flex">
+      <div class="dateHeading">Today</div>
+      <span class="spacer"></span>
+      <button @click="removeToday()" style="margin-right:20px">X</button>
+    </div>
     <ul>
       <transition-group name="list-transitions">
         <li v-for="note in todaysNotifications" :key="note.id" class="list-transitions-item">
@@ -9,8 +14,14 @@
         </li>
       </transition-group>
     </ul>
+    </div>
+    <div v-if="weeksNotifications.length > 0">
     <hr style="width:100%" />
-    <div class="dateHeading">This Week</div>
+    <div style="display: flex">
+      <div class="dateHeading">This Week</div>
+      <span class="spacer"></span>
+      <button @click="removeWeek()" style="margin-right:20px">X</button>
+    </div>
     <ul>
       <transition-group name="list-transitions">
         <li v-for="note in weeksNotifications" :key="note.id" class="list-transitions-item">
@@ -18,8 +29,14 @@
         </li>
       </transition-group>
     </ul>
+    </div>
+    <div v-if="olderNotifications.length > 0">
     <hr style="width:100%" />
-    <div class="dateHeading">Older</div>
+    <div style="display: flex">
+      <div class="dateHeading">Older</div>
+      <span class="spacer"></span>
+      <button @click="removeOlder()" style="margin-right:20px">X</button>
+    </div>
     <ul>
       <transition-group name="list-transitions">
         <li v-for="note in olderNotifications" :key="note.id" class="list-transitions-item">
@@ -27,6 +44,7 @@
         </li>
       </transition-group>
     </ul>
+    </div>
   </div>
 </template>
 
@@ -35,6 +53,7 @@ import Vue from "vue";
 import Notification from "@/components/Notification.vue";
 import { AdzuNotification } from "@/models/AdzuNotification";
 import { Component, Prop } from "vue-property-decorator";
+import { REMOVE_NOTIFICATION } from "@/models/Mutations";
 
 @Component({
   components: {
@@ -63,6 +82,33 @@ export default class NotificationBar extends Vue {
       // clean up the interval timer
       console.log("removing timer");
       clearTimeout(this.interval);
+    }
+  }
+
+  removeToday() {
+    if (this.bus) {
+      console.log("Removing todays notifications");
+      this.todaysNotifications.forEach((n: AdzuNotification) => {
+        this.$store.dispatch(REMOVE_NOTIFICATION, n);
+      });
+    }
+  }
+
+  removeWeek() {
+    if (this.bus) {
+      console.log("Removing weeks notifications");
+      this.weeksNotifications.forEach((n: AdzuNotification) => {
+        this.$store.dispatch(REMOVE_NOTIFICATION, n);
+      });
+    }
+  }
+
+  removeOlder() {
+    if (this.bus) {
+      console.log("Removing older notifications");
+      this.olderNotifications.forEach((n: AdzuNotification) => {
+        this.$store.dispatch(REMOVE_NOTIFICATION, n);
+      });
     }
   }
 
@@ -111,6 +157,9 @@ export default class NotificationBar extends Vue {
   margin-left: 20px;
   font-weight: bold;
   text-align: left;
+}
+.spacer {
+  flex: 1 1 auto;
 }
 .list-transitions-item {
   transition: all 0.5s;

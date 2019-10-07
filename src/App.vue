@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <form v-on:submit.prevent="newNotification">
+    <form @submit.prevent="newNotification">
       <div>
         <input ref="noteMessage" type="text" v-model="noteMessage" />
       </div>
@@ -9,10 +9,10 @@
       </div>
     </form>
     <div>
-      <button v-on:click="createMany()">Create set</button>
+      <button @click="createMany()">Create set</button>
     </div>
     <div>
-      <button v-on:click="toggleSidebar()">Toggle</button>
+      <button @click="toggleSidebar()">Toggle</button>
     </div>
     <transition name="sidebar">
       <NotificationBar class="sidebar-item" :bus="bus" v-if="showSidebar" />
@@ -47,7 +47,7 @@ export default class app extends Vue {
   }
   newNotification() {
     const newN = new AdzuNotification(this.noteMessage);
-    this.$store.commit(ADD_NOTIFICATION, newN);
+    this.$store.dispatch(ADD_NOTIFICATION, newN);
 
     this.noteMessage = "";
     this.focusInput();
@@ -61,17 +61,17 @@ export default class app extends Vue {
     input.focus();
   }
   toggleSidebar() {
-    this.$store.commit(TOGGLE_SIDEBAR);
+    this.$store.dispatch(TOGGLE_SIDEBAR);
   }
   createMany() {
     for(var x = 22; x >= 0; x-=2) {
       const newN = new AdzuNotification(`message-a-${x}`, this.hoursAgo(x));
-      this.$store.commit(ADD_NOTIFICATION, newN);
+      this.$store.dispatch(ADD_NOTIFICATION, newN);
     }
 
     for(var x = 12; x >= 1; x--) {
       const newN = new AdzuNotification(`message-b-${x}`, this.daysAgo(x));
-      this.$store.commit(ADD_NOTIFICATION, newN);
+      this.$store.dispatch(ADD_NOTIFICATION, newN);
     }
   }
   hoursAgo(numHours: number) {
