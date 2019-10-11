@@ -1,12 +1,50 @@
 <template>
   <div class="notificationBar">
+    <div v-if="todaysNotifications.length > 0">
+    <hr style="width:100%" />
+    <div style="display: flex">
+      <div class="dateHeading">Today</div>
+      <span class="spacer"></span>
+      <button @click="removeToday()" style="margin-right:20px">X</button>
+    </div>
     <ul>
       <transition-group name="list-transitions">
-        <li v-for="note in notificationList" :key="note.id" class="list-transitions-item">
-          <Notification :notification="note" :bus="bus" :popup="false"/>
+        <li v-for="note in todaysNotifications" :key="note.id" class="list-transitions-item">
+          <Notification :notification="note" :bus="bus" :popup="false" />
         </li>
       </transition-group>
     </ul>
+    </div>
+    <div v-if="weeksNotifications.length > 0">
+    <hr style="width:100%" />
+    <div style="display: flex">
+      <div class="dateHeading">This Week</div>
+      <span class="spacer"></span>
+      <button @click="removeWeek()" style="margin-right:20px">X</button>
+    </div>
+    <ul>
+      <transition-group name="list-transitions">
+        <li v-for="note in weeksNotifications" :key="note.id" class="list-transitions-item">
+          <Notification :notification="note" :bus="bus" :popup="false" />
+        </li>
+      </transition-group>
+    </ul>
+    </div>
+    <div v-if="olderNotifications.length > 0">
+    <hr style="width:100%" />
+    <div style="display: flex">
+      <div class="dateHeading">Older</div>
+      <span class="spacer"></span>
+      <button @click="removeOlder()" style="margin-right:20px">X</button>
+    </div>
+    <ul>
+      <transition-group name="list-transitions">
+        <li v-for="note in olderNotifications" :key="note.id" class="list-transitions-item">
+          <Notification :notification="note" :bus="bus" :popup="false" />
+        </li>
+      </transition-group>
+    </ul>
+    </div>
   </div>
 </template>
 
@@ -65,21 +103,89 @@ export default class NotificationBar extends Vue {
     }
   }
 
+  removeToday() {
+    if (this.bus) {
+      console.log("Removing todays notifications");
+      this.todaysNotifications.forEach((n: AdzuNotification) => {
+        this.$store.dispatch(REMOVE_NOTIFICATION, n);
+      });
+    }
+  }
+
+  removeWeek() {
+    if (this.bus) {
+      console.log("Removing weeks notifications");
+      this.weeksNotifications.forEach((n: AdzuNotification) => {
+        this.$store.dispatch(REMOVE_NOTIFICATION, n);
+      });
+    }
+  }
+
+  removeOlder() {
+    if (this.bus) {
+      console.log("Removing older notifications");
+      this.olderNotifications.forEach((n: AdzuNotification) => {
+        this.$store.dispatch(REMOVE_NOTIFICATION, n);
+      });
+    }
+  }
+
   get notificationList(): AdzuNotification[] {
     return this.$store.state.notificationList;
+  }
+
+  get todaysNotifications(): AdzuNotification[] {
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneDayAgo = new Date().valueOf() - oneDay;
+    return this.$store.state.notificationList.filter(
+      (n: AdzuNotification) => n.arrivalTime.valueOf() > oneDayAgo
+    );
+  }
+
+  get weeksNotifications(): AdzuNotification[] {
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneDayAgo = new Date().valueOf() - oneDay;
+    const lastMonday = this.getMonday(new Date()).valueOf();
+    return this.$store.state.notificationList.filter(
+      (n: AdzuNotification) =>
+        n.arrivalTime.valueOf() >= lastMonday &&
+        n.arrivalTime.valueOf() < oneDayAgo
+    );
+  }
+
+  get olderNotifications(): AdzuNotification[] {
+    const lastMonday = this.getMonday(new Date()).valueOf();
+    return this.$store.state.notificationList.filter(
+      (n: AdzuNotification) => n.arrivalTime.valueOf() < lastMonday
+    );
+  }
+
+  private getMonday(d: Date): Date {
+    d = new Date(d);
+    var day = d.getDay(),
+      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    return new Date(d.setDate(diff));
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.dateHeading {
+  margin-left: 20px;
+  font-weight: bold;
+  text-align: left;
+}
+.spacer {
+  flex: 1 1 auto;
+}
 .list-transitions-item {
   transition: all 0.5s;
   display: flex;
 }
 .list-transitions-enter {
   opacity: 0;
-  transform: translateY(100vh);
+  transform: translateX(400px);
 }
 .list-transitions-leave-to {
   transform: translateX(400px);
@@ -88,7 +194,7 @@ export default class NotificationBar extends Vue {
   position: absolute;
 }
 .list-transitions-move {
-  transition: all 0.3s;
+  transition: all 0.5s;
 }
 .notificationBar {
   display: flex;

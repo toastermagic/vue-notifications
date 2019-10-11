@@ -21,7 +21,8 @@ export default new Vuex.Store({
   },
   mutations: {
     [ADD_NOTIFICATION](state: INotificationStoreState, newNotification: AdzuNotification): void {
-      state.notificationList.push(newNotification);
+      state.notificationList.unshift(newNotification);
+      state.notificationList.sort((a: AdzuNotification, b: AdzuNotification) => a.arrivalTime.valueOf() - b.arrivalTime.valueOf() ? 1 : -1);
     },
     [REMOVE_NOTIFICATION](state: INotificationStoreState, notification: AdzuNotification): void {
       state.notificationList.splice(state.notificationList.findIndex((n) => n.id === notification.id), 1);

@@ -43,7 +43,7 @@ export default class app extends Vue {
   }
   newNotification() {
     const newN = new AdzuNotification(this.noteMessage);
-    this.$store.commit(ADD_NOTIFICATION, newN);
+    this.$store.dispatch(ADD_NOTIFICATION, newN);
 
     this.noteMessage = "";
     this.focusInput();
