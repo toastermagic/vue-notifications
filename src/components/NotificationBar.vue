@@ -14,7 +14,9 @@
 import Vue from "vue";
 import Notification from "@/components/Notification.vue";
 import { AdzuNotification } from "@/models/AdzuNotification";
-import { Component, Prop } from "vue-property-decorator";
+import { Component, Prop, Watch } from "vue-property-decorator";
+import { REMOVE_NOTIFICATION } from "@/models/Mutations";
+import { TweenMax, Power4 } from "gsap";
 
 @Component({
   components: {
@@ -35,6 +37,23 @@ export default class NotificationBar extends Vue {
         this.bus.$emit("refresh");
       }
     }, 6000);
+
+    TweenMax.set(this.$el, {
+      x: (<HTMLElement>this.$el).offsetWidth
+    });
+  }
+
+  get open(): boolean {
+    return this.$store.state.sidebarOpen;
+  }
+
+  @Watch("open")
+  openWatch(open: boolean) {
+    const dX = open ? 0 : (<HTMLElement>this.$el).offsetWidth;
+    TweenMax.to(this.$el, 0.6, {
+      x: dX,
+      ease: Power4.easeOut
+    });
   }
 
   destroyed() {
@@ -74,12 +93,13 @@ export default class NotificationBar extends Vue {
 .notificationBar {
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: fixed;
   right: 0px;
   top: 0px;
   background: rgba(0, 0, 255, 0.2);
   height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   width: 220px;
 }
 ul {

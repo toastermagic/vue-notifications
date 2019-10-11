@@ -1,18 +1,23 @@
 <template>
   <div id="app">
-    <form v-on:submit.prevent="newNotification">
+    <div class="container">
+      <form @submit.prevent="newNotification">
+        <div>
+          <input ref="noteMessage" type="text" v-model="noteMessage" />
+        </div>
+        <div>
+          <button>New</button>
+        </div>
+      </form>
       <div>
-        <input ref="noteMessage" type="text" v-model="noteMessage" />
+        <button @click="createMany()">Create set</button>
       </div>
       <div>
-        <button>New</button>
+        <button @click="toggleSidebar()">Toggle</button>
       </div>
-    </form>
-    <button v-on:click="toggleSidebar()">Toggle</button>
-    <transition name="sidebar">
-      <NotificationBar class="sidebar-item" :bus="bus" v-if="showSidebar" />
-    </transition>
-    <NotificationPopupManager class="notificationPopupManager" :bus="bus"/>
+    </div>
+    <NotificationBar class="sidebar-item" :bus="bus" />
+    <NotificationPopupManager class="notificationPopupManager" :bus="bus" />
   </div>
 </template>
 
@@ -33,10 +38,6 @@ export default class app extends Vue {
   showPopup = false;
   newNotifcation: AdzuNotification | undefined = undefined;
 
-  get showSidebar() {
-    return this.$store.state.sidebarOpen;
-  }
-
   mounted() {
     this.focusInput();
   }
@@ -56,10 +57,33 @@ export default class app extends Vue {
     input.focus();
   }
   toggleSidebar() {
-    this.$store.commit(TOGGLE_SIDEBAR);
+    this.$store.dispatch(TOGGLE_SIDEBAR);
+  }
+  createMany() {
+    for (var x = 22; x >= 0; x -= 2) {
+      const newN = new AdzuNotification(`message-a-${x}`, this.hoursAgo(x));
+      this.$store.dispatch(ADD_NOTIFICATION, newN);
+    }
+
+    for (var x = 12; x >= 1; x--) {
+      const newN = new AdzuNotification(`message-b-${x}`, this.daysAgo(x));
+      this.$store.dispatch(ADD_NOTIFICATION, newN);
+    }
+  }
+  hoursAgo(numHours: number) {
+    return new Date(new Date().valueOf() - numHours * 60 * 60 * 1000);
+  }
+  daysAgo(numDays: number) {
+    return new Date(new Date().valueOf() - numDays * 24 * 60 * 60 * 1000);
   }
 }
 </script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+</style>
 
 <style scoped>
 #app {
@@ -68,7 +92,15 @@ export default class app extends Vue {
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+.container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--primary-color);
 }
 
 .notificationPopupManager {
@@ -76,17 +108,4 @@ export default class app extends Vue {
   right: 0px;
   bottom: 0px;
 }
-
-.sidebar-item {
-  transition: all 0.5s;
-}
-.sidebar-leave-active {
-  position: absolute;
-}
-
-.sidebar-enter,
-.sidebar-leave-to {
-  transform: translateX(200px);
-}
-
 </style>
