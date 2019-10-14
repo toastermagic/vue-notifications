@@ -17,7 +17,7 @@
       </div>
     </div>
     <NotificationBar class="sidebar-item" :bus="bus" />
-    <NotificationPopupManager class="notificationPopupManager" :bus="bus" />
+    <NotificationPopupManager class="notificationPopupManager" v-if="showPopup" :bus="bus" />
   </div>
 </template>
 
@@ -33,11 +33,12 @@ import { Component, Prop } from "vue-property-decorator";
   components: { NotificationBar, NotificationPopupManager }
 })
 export default class app extends Vue {
-  noteMessage = "";
+  noteMessage = "some message";
   bus = new Vue();
-  showPopup = false;
   newNotifcation: AdzuNotification | undefined = undefined;
-
+  get showPopup() {
+    return !this.$store.state.sidebarOpen;
+  }
   mounted() {
     this.focusInput();
   }
@@ -48,7 +49,7 @@ export default class app extends Vue {
     this.noteMessage = "";
     this.focusInput();
 
-    if (!this.showSidebar) {
+    if (this.showPopup) {
       this.bus.$emit("popup", newN);
     }
   }
@@ -65,8 +66,8 @@ export default class app extends Vue {
       this.$store.dispatch(ADD_NOTIFICATION, newN);
     }
 
-    for (var x = 12; x >= 1; x--) {
-      const newN = new AdzuNotification(`message-b-${x}`, this.daysAgo(x));
+    for (var y = 12; y >= 1; y--) {
+      const newN = new AdzuNotification(`message-b-${y}`, this.daysAgo(y));
       this.$store.dispatch(ADD_NOTIFICATION, newN);
     }
   }
