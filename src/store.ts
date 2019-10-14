@@ -2,10 +2,12 @@ import Vue from "vue";
 import Vuex from "vuex";
 import { AdzuNotification } from "@/models/AdzuNotification";
 import { ADD_NOTIFICATION, REMOVE_NOTIFICATION, MARK_AS_READ, TOGGLE_SIDEBAR } from "@/models/Mutations";
+import moment from "moment";
 
 Vue.use(Vuex);
 
 const notificationList: AdzuNotification[] = [];
+const oneDay = 24 * 60 * 60 * 1000;
 
 interface INotificationStoreState {
   notificationList: AdzuNotification[];
@@ -18,6 +20,31 @@ export default new Vuex.Store({
   state: {
     notificationList: storeList,
     sidebarOpen: false
+  },
+  getters: {
+    todaysNotifications: state => {
+      const thisMorning = moment().startOf('day').toDate();
+      console.log(thisMorning);
+      return state.notificationList.filter(
+        (n: AdzuNotification) => n.arrivalTime > thisMorning
+      );
+    },
+    weeksNotifications: state => {
+      const thisMorning = moment().startOf('day').toDate();
+      const lastMonday = moment().day(-1).startOf('day').toDate();
+
+      return state.notificationList.filter(
+        (n: AdzuNotification) =>
+          n.arrivalTime >= lastMonday &&
+          n.arrivalTime < thisMorning
+      );
+    },
+    olderNotifications: state => {
+      const lastMonday = moment().day(-1).startOf('day').toDate();
+      return state.notificationList.filter(
+        (n: AdzuNotification) => n.arrivalTime < lastMonday
+      );
+    }
   },
   mutations: {
     [ADD_NOTIFICATION](state: INotificationStoreState, newNotification: AdzuNotification): void {
